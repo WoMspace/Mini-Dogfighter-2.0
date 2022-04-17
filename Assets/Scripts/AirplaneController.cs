@@ -1,18 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class AirplaneController : MonoBehaviour
 {
+    public bool UseLookControls = true;
+
+    public float maxSpeed;
+    private GameObject airplane;
+    private float distanceToCamera;
+    private Camera phoneCamera;
+    
     // Start is called before the first frame update
     void Start()
     {
-        
+        airplane = GetComponent<GameObject>();
+        phoneCamera = GetComponent<Camera>();
+        distanceToCamera = 1.0f;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(UseLookControls) LookControls();
+        else RemoteControls();
+    }
+
+    void LookControls()
+    {
+        Vector3 cameraTarget = new Vector3(phoneCamera.pixelWidth / 2f, phoneCamera.pixelHeight / 2f, distanceToCamera);
+        Vector3 targetLocation = phoneCamera.ScreenToWorldPoint(cameraTarget);
+        var airplanePosition = airplane.transform.position;
+        // Vector3 targetRotation = targetLocation - position;
         
+        airplanePosition += airplane.transform.forward * (maxSpeed * Time.deltaTime);
+        airplane.transform.position = airplanePosition;
+        airplane.transform.LookAt(targetLocation);
+    }
+
+    void RemoteControls()
+    {
+        throw new NotImplementedException("This isn't implemented. Please use Look Controls.");
     }
 }
