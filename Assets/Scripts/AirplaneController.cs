@@ -7,9 +7,10 @@ public class AirplaneController : MonoBehaviour
 
     public float maxSpeed;
     private GameObject airplane;
-    private float distanceToCamera;
+    public float distanceToCamera;
     private Camera phoneCamera;
-    
+    private bool _isDestroyed = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,15 +22,18 @@ public class AirplaneController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(UseLookControls) LookControls();
-        else RemoteControls();
+        if (!AirfieldManager.Paused())
+        {
+            if (UseLookControls) LookControls();
+            else RemoteControls();
+        }
     }
 
     void LookControls()
     {
         Vector3 cameraTarget = new Vector3(phoneCamera.pixelWidth / 2f, phoneCamera.pixelHeight / 2f, distanceToCamera);
         Vector3 targetLocation = phoneCamera.ScreenToWorldPoint(cameraTarget);
-        var airplanePosition = airplane.transform.position;
+        Vector3 airplanePosition = airplane.transform.position;
         // Vector3 targetRotation = targetLocation - position;
         
         airplanePosition += airplane.transform.forward * (maxSpeed * Time.deltaTime);
@@ -40,5 +44,10 @@ public class AirplaneController : MonoBehaviour
     void RemoteControls()
     {
         throw new NotImplementedException("This isn't implemented. Please use Look Controls.");
+    }
+
+    public bool isDestroyed()
+    {
+        return _isDestroyed;
     }
 }
