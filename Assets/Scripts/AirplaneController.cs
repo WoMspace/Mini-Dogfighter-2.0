@@ -12,7 +12,7 @@ public class AirplaneController : MonoBehaviour
     private bool _isDestroyed = false;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         airplane = GetComponent<GameObject>();
         phoneCamera = GetComponent<Camera>();

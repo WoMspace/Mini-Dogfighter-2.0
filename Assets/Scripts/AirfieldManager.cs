@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
@@ -46,10 +45,6 @@ public class AirfieldManager : MonoBehaviour
     private GameObject airplane;
     private AirplaneController _airplaneController;
 
-    void Start()
-    {
-        debugGameState();
-    }
     void Awake()
     {
         _planeManager = GetComponent<ARPlaneManager>();
@@ -59,6 +54,10 @@ public class AirfieldManager : MonoBehaviour
         airplaneSpawner = GameObject.Find("AirplaneSpawner");
         _airplaneController = airplane.GetComponent<AirplaneController>();
         gameState = 1;
+        debugGameState();
+    }
+    void Start()
+    {
         debugGameState();
     }
 

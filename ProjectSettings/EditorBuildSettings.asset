@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: cdf1af94a63ad40d3978e82e504d41ec
+  - enabled: 1
     path: Assets/Scenes/FlyPlane.unity
     guid: 6bdce89659816455b9f906fc62d19910
   m_configObjects:

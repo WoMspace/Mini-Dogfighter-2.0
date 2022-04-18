@@ -12,7 +12,7 @@ public class HudControls : MonoBehaviour
 
 	private bool _isPlayerReady;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
 	    uiElement = GetComponent<GameObject>();
 	    _isPlayerReady = false;
