@@ -26,7 +26,7 @@ public class AirfieldManager : MonoBehaviour
     private HudControls playButton;
     
     // Game state stuff
-    private int gameState; // See Update() for meanings.
+    private int gameState = 0; // See Update() for meanings.
     public int GameState() {return gameState; }
     private static bool stateChanged;
     private static bool _paused;
@@ -34,6 +34,7 @@ public class AirfieldManager : MonoBehaviour
     public static bool StateChanged() {return stateChanged;}
 
     public TextMeshProUGUI debugText;
+    private int debugNumber = 0;
     
     // Airfield
     public GameObject AirfieldPrefab;
@@ -47,23 +48,26 @@ public class AirfieldManager : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log("WOM: Awake!");
         _planeManager = GetComponent<ARPlaneManager>();
         _raycastManager = GetComponent<ARRaycastManager>();
         _anchorManager = GetComponent<ARAnchorManager>();
 
         airplaneSpawner = GameObject.Find("AirplaneSpawner");
         _airplaneController = airplane.GetComponent<AirplaneController>();
-        gameState = 1;
         debugGameState();
     }
     void Start()
     {
+        Debug.Log("WOM: Start!");
+        gameState = 1;
         debugGameState();
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("WOM: Update!");
         debugGameState();
         int oldState = gameState;
         switch (gameState)
@@ -160,6 +164,9 @@ public class AirfieldManager : MonoBehaviour
 
     void debugGameState()
     {
-        debugText.text = $"gameState: {gameState}\nTimescale: {Time.timeScale}\nPaused: {_paused}";
+        debugText.text = $"{debugNumber}\n" +
+                         $"gameState: {gameState}\n" +
+                         $"Timescale: {Time.timeScale}\n" +
+                         $"Paused: {_paused}";
     }
 }
