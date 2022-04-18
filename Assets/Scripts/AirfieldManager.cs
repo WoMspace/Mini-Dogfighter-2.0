@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
@@ -33,6 +33,8 @@ public class AirfieldManager : MonoBehaviour
     private static bool _paused;
     public static bool Paused() {return _paused;}
     public static bool StateChanged() {return stateChanged;}
+
+    public TextMeshProUGUI debugText;
     
     // Airfield
     public GameObject AirfieldPrefab;
@@ -43,6 +45,11 @@ public class AirfieldManager : MonoBehaviour
     public GameObject AirplanePrefab;
     private GameObject airplane;
     private AirplaneController _airplaneController;
+
+    void Start()
+    {
+        debugGameState();
+    }
     void Awake()
     {
         _planeManager = GetComponent<ARPlaneManager>();
@@ -52,11 +59,13 @@ public class AirfieldManager : MonoBehaviour
         airplaneSpawner = GameObject.Find("AirplaneSpawner");
         _airplaneController = airplane.GetComponent<AirplaneController>();
         gameState = 1;
+        debugGameState();
     }
 
     // Update is called once per frame
     void Update()
     {
+        debugGameState();
         int oldState = gameState;
         switch (gameState)
         {
@@ -149,4 +158,9 @@ public class AirfieldManager : MonoBehaviour
 
     public void isPlayerReady() { gameState = 3; }
     public bool AirfieldIsPlaced() { return _airfieldExists; }
+
+    void debugGameState()
+    {
+        debugText.text = $"gameState: {gameState}\nTimescale: {Time.timeScale}\nPaused: {_paused}";
+    }
 }
