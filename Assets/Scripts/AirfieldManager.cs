@@ -51,6 +51,7 @@ public class AirfieldManager : MonoBehaviour
 
         airplaneSpawner = GameObject.Find("AirplaneSpawner");
         _airplaneController = airplane.GetComponent<AirplaneController>();
+        gameState = 1;
     }
 
     // Update is called once per frame
@@ -67,7 +68,7 @@ public class AirfieldManager : MonoBehaviour
             case 2: // Waiting for player to be ready
                 if (stateChanged)
                 {
-                    HUD = Instantiate(HUD_Prefab);
+                    if(HUD == null) HUD = Instantiate(HUD_Prefab);
                     playButton = GameObject.Find("PlayButton").GetComponent<HudControls>();
                     playButton.Show();
                 }
