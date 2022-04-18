@@ -16,6 +16,6 @@ public class PLEASE : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("WOM: PLEASE: START");
+        Debug.Log("WOM: PLEASE: UPDATE");
     }
 }
