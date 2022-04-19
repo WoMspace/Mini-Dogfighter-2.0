@@ -48,7 +48,7 @@ public class AirfieldManager : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log("WOM: Awake!");
+        Debug.Log("WOM: AIRFIELDMANAGER: Awake!");
         _planeManager = GetComponent<ARPlaneManager>();
         _raycastManager = GetComponent<ARRaycastManager>();
         _anchorManager = GetComponent<ARAnchorManager>();
@@ -60,7 +60,7 @@ public class AirfieldManager : MonoBehaviour
     }
     void Start()
     {
-        Debug.Log("WOM: Start!");
+        Debug.Log("WOM: AIRFIELDMANAGER: Start!");
         gameState = 1;
         debugGameState();
     }
@@ -68,7 +68,7 @@ public class AirfieldManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("WOM: Update!");
+        Debug.Log("WOM: AIRFIELDMANAGER: Update!");
         debugGameState();
         int oldState = gameState;
         switch (gameState)
