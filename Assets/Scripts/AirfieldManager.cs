@@ -56,6 +56,7 @@ public class AirfieldManager : MonoBehaviour
         airplaneSpawner = GameObject.Find("AirplaneSpawner");
         _airplaneController = airplane.GetComponent<AirplaneController>();
         debugGameState();
+        Time.timeScale = 1f;
     }
     void Start()
     {
@@ -110,8 +111,8 @@ public class AirfieldManager : MonoBehaviour
         if (stateChanged)
         {
             // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
-            if (_paused) Time.timeScale = 0;
-            else Time.timeScale = 1;
+            if (_paused) Time.timeScale = 0f;
+            else Time.timeScale = 1f;
         }
     }
 
