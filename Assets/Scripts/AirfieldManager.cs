@@ -57,12 +57,14 @@ public class AirfieldManager : MonoBehaviour
         _airplaneController = airplane.GetComponent<AirplaneController>();
         debugGameState();
         Time.timeScale = 1f;
+        Debug.Log("WOM: AIRFIELDMANAGER: Awake Completed!");
     }
     void Start()
     {
         Debug.Log("WOM: AIRFIELDMANAGER: Start!");
         gameState = 1;
         debugGameState();
+        Debug.Log("WOM: AIRFIELDMANAGER: Start Completed!");
     }
 
     // Update is called once per frame
@@ -114,6 +116,7 @@ public class AirfieldManager : MonoBehaviour
             if (_paused) Time.timeScale = 0f;
             else Time.timeScale = 1f;
         }
+        Debug.Log("WOM: AIRFIELDMANAGER: Update Completed!");
     }
 
     bool PlaceAirfield()
@@ -157,6 +160,7 @@ public class AirfieldManager : MonoBehaviour
         if (_airplaneController.IsDestroyed()) Destroy(airplane);
         airplane = Instantiate(AirplanePrefab, airplaneSpawner.transform);
         airplane.name = "PlayerPlane";
+        _airplaneController = airplane.GetComponent<AirplaneController>();
         HudControls.getNewAirplane();
     }
 

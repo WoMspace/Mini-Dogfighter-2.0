@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class WeaponController : MonoBehaviour
 {
-    public Rigidbody bulletProjectile;
+    public GameObject bulletProjectile;
 
-    public Rigidbody bombProjectile;
+    public GameObject bombProjectile;
 
     public float bulletSpeed;
     public int gunCooldownMS = 100;
@@ -19,8 +19,6 @@ public class WeaponController : MonoBehaviour
         gunCooldown.Restart();
         bombCooldown.Restart();
     }
-
-    // Update is called once per frame
 
     public void Shoot()
     {
@@ -37,8 +35,8 @@ public class WeaponController : MonoBehaviour
         }
         if (gunCooldown.ElapsedMilliseconds > gunCooldownMS)
         {
-            Rigidbody bullet = Instantiate(bulletProjectile);
-            bullet.velocity = GetComponentInParent<Rigidbody>().velocity + (GetComponentInParent<Rigidbody>().velocity.normalized * bulletSpeed);
+            GameObject bullet = Instantiate(bulletProjectile);
+            bullet.GetComponent<Rigidbody>().velocity = GetComponentInParent<Rigidbody>().velocity + (GetComponentInParent<Rigidbody>().velocity.normalized * bulletSpeed);
             gunCooldown.Restart();
         }
     }
@@ -47,8 +45,8 @@ public class WeaponController : MonoBehaviour
     {
         if (bombCooldown.ElapsedMilliseconds > bombCooldownMS)
         {
-            Rigidbody bomb = Instantiate(bombProjectile);
-            bomb.velocity = GetComponentInParent<Rigidbody>().velocity;
+            GameObject bomb = Instantiate(bombProjectile);
+            bomb.GetComponent<Rigidbody>().velocity = GetComponentInParent<Rigidbody>().velocity;
         }
     }
 }
