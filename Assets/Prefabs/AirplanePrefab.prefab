@@ -64,9 +64,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletProjectile: {fileID: 0}
   bombProjectile: {fileID: 0}
-  bulletSpeed: 0
+  bulletSpeed: 1
   gunCooldownMS: 100
   bombCooldownMS: 2000
+  playerTeam: 1
 --- !u!1001 &2950588453063303729
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -157,17 +158,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: df7a830edbb4d4f35817505ca1f82a6f,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 1.74
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: df7a830edbb4d4f35817505ca1f82a6f,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 1.74
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: df7a830edbb4d4f35817505ca1f82a6f,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 1.74
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: df7a830edbb4d4f35817505ca1f82a6f,
         type: 3}
@@ -237,3 +238,22 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8438990243214311804}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8780956303222373421 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: df7a830edbb4d4f35817505ca1f82a6f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8438990243214311804}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2885065516749551721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8780956303222373421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e38dc6c688ac44a5afef3d46eaa56ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rpm: 60

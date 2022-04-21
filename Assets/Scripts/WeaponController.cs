@@ -14,12 +14,14 @@ public class WeaponController : MonoBehaviour
     private bool doBomb;
     private Stopwatch gunCooldown = new();
     private Stopwatch bombCooldown = new();
-    void Awake()
+    public bool playerTeam;
+    void Start()
     {
         gunCooldown.Restart();
         bombCooldown.Restart();
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     public void Shoot()
     {
         if (AirfieldManager.Paused() && AirfieldManager.StateChanged())
@@ -37,6 +39,7 @@ public class WeaponController : MonoBehaviour
         {
             GameObject bullet = Instantiate(bulletProjectile);
             bullet.GetComponent<Rigidbody>().velocity = GetComponentInParent<Rigidbody>().velocity + (GetComponentInParent<Rigidbody>().velocity.normalized * bulletSpeed);
+            bullet.GetComponent<Bullet>().playerTeam = false;
             gunCooldown.Restart();
         }
     }

@@ -9,7 +9,9 @@ public class AirplaneController : MonoBehaviour
     private GameObject airplane;
     public float distanceToCamera;
     private Camera phoneCamera;
-    private bool _isDestroyed = false;
+    private bool _isDestroyed;
+
+    private int hp;
 
     // Start is called before the first frame update
     void Awake()
@@ -17,6 +19,11 @@ public class AirplaneController : MonoBehaviour
         airplane = GetComponent<GameObject>();
         phoneCamera = GetComponent<Camera>();
         distanceToCamera = 1.0f;
+    }
+
+    void Start()
+    {
+        hp = 100;
     }
 
     // Update is called once per frame
@@ -27,8 +34,10 @@ public class AirplaneController : MonoBehaviour
             if (UseLookControls) LookControls();
             else RemoteControls();
         }
-    }
 
+        _isDestroyed = hp <= 0;
+    }
+    // TODO: Add speed controller for propeller
     void LookControls()
     {
         Vector3 cameraTarget = new Vector3(phoneCamera.pixelWidth / 2f, phoneCamera.pixelHeight / 2f, distanceToCamera);

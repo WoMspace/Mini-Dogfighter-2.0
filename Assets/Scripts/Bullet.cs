@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -12,11 +7,14 @@ public class Bullet : MonoBehaviour
 	private Stopwatch despawn = new();
 	private GameObject bullet;
 
+	public bool playerTeam;
+
 	public GameObject explosion;
 	// Start is called before the first frame update
 	void Start()
 	{
 		bullet = GetComponentInParent<GameObject>();
+		
 		despawn.Restart();
 	}
 
@@ -31,17 +29,17 @@ public class Bullet : MonoBehaviour
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		if (collision.collider.CompareTag("Enemy") || collision.collider.CompareTag("Floor"))
+		string collisionTag = playerTeam ? "Enemy" : "Player";
+		if (collision.collider.CompareTag(collisionTag) || collision.collider.CompareTag("Floor"))
 		{
 			BulletCollision(collision.collider.gameObject);
 		}
 	}
 
-	private void BulletCollision(GameObject collider)
+	private void BulletCollision(GameObject victim)
 	{
 		Instantiate(explosion).GetComponent<ParticleSystem>().Play();
-		collider.SendMessage("BulletHit");
-		List<GameObject> enemies = new();
+		victim.SendMessage("BulletHit");
 		Destroy(bullet);
 	}
 }

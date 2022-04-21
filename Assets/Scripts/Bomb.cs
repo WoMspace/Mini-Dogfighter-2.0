@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Bomb : MonoBehaviour
@@ -38,17 +35,18 @@ public class Bomb : MonoBehaviour
         }
     }
 
+    [SuppressMessage("ReSharper", "CommentTypo")]
     private void Detonate()
     {
         Instantiate(explosion).GetComponent<ParticleSystem>().Play();
-        List<GameObject> enemies = new();
-        foreach (var gameObject in FindObjectsOfType<GameObject>().ToList())
+        // List<GameObject> enemies = new();
+        foreach (var gameObjects in FindObjectsOfType<GameObject>().ToList())
         { // Get all gameobjects with the tag Enemy and within range
-            float distance = Vector3.Distance(gameObject.transform.position, bomb.transform.position);
-            if (gameObject.tag == "Enemy" &&  distance < explosionRange)
+            float distance = Vector3.Distance(gameObjects.transform.position, bomb.transform.position);
+            if (gameObjects.CompareTag("Enemy") &&  distance < explosionRange)
             {
-                enemies.Add(gameObject);
-                gameObject.SendMessage("nearbyExplosion", distance);
+                // enemies.Add(gameObject);
+                gameObjects.SendMessage("nearbyExplosion", distance);
             }
         }
         Destroy(bomb);

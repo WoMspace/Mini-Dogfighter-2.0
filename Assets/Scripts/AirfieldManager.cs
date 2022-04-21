@@ -26,7 +26,7 @@ public class AirfieldManager : MonoBehaviour
     private HudControls playButton;
     
     // Game state stuff
-    private int gameState = 0; // See Update() for meanings.
+    private int gameState; // See Update() for meanings.
     public int GameState() {return gameState; }
     private static bool stateChanged;
     private static bool _paused;
@@ -155,6 +155,7 @@ public class AirfieldManager : MonoBehaviour
         return true;
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     void SpawnAirplane()
     {
         if (_airplaneController.IsDestroyed()) Destroy(airplane);
