@@ -36,7 +36,11 @@ public class HudControls : MonoBehaviour
         weaponController.Shoot();
     }
 
-    private void Begin() { _isPlayerReady = true; }
+    private void Begin()
+    {
+	    _isPlayerReady = true;
+	    GameObject.Find("SpawnManager").GetComponent<AirfieldManager>().setGameState(3);
+    }
     public bool isPlayerReady() {return _isPlayerReady;}
 
     public void Show() { uiElement.SetActive(true); }

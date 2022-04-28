@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -43,8 +44,8 @@ public class AirfieldManager : MonoBehaviour
     // Airplane
     private GameObject airplaneSpawner;
     public GameObject AirplanePrefab;
-    private GameObject airplane;
-    private AirplaneController _airplaneController;
+    [CanBeNull] private GameObject airplane;
+    [CanBeNull] private AirplaneController _airplaneController;
 
     void Awake()
     {
@@ -52,9 +53,10 @@ public class AirfieldManager : MonoBehaviour
         _planeManager = GetComponent<ARPlaneManager>();
         _raycastManager = GetComponent<ARRaycastManager>();
         _anchorManager = GetComponent<ARAnchorManager>();
+        Debug.Log("Finished getting AR components.");
 
         airplaneSpawner = GameObject.Find("AirplaneSpawner");
-        _airplaneController = airplane.GetComponent<AirplaneController>();
+        // _airplaneController = airplane.GetComponent<AirplaneController>();
         debugGameState();
         Time.timeScale = 1f;
         Debug.Log("WOM: AIRFIELDMANAGER: Awake Completed!");
@@ -70,7 +72,7 @@ public class AirfieldManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("WOM: AIRFIELDMANAGER: Update!");
+        // Debug.Log("WOM: AIRFIELDMANAGER: Update!");
         debugGameState();
         int oldState = gameState;
         switch (gameState)
@@ -78,7 +80,8 @@ public class AirfieldManager : MonoBehaviour
             case 0: //Not started, only tracking.
                 break;
             case 1: // Ready to place airfield.
-                if (PlaceAirfield()) gameState = 2;
+                // if (PlaceAirfield()) gameState = 2;
+                PlaceAirfield();
                 break;
             case 2: // Waiting for player to be ready
                 if (stateChanged)
@@ -86,16 +89,18 @@ public class AirfieldManager : MonoBehaviour
                     if(HUD == null) HUD = Instantiate(HUD_Prefab);
                     playButton = GameObject.Find("PlayButton").GetComponent<HudControls>();
                     playButton.Show();
+                    Debug.Log("Got HudControls");
                 }
                 if (playButton.isPlayerReady()) gameState = 3;
                 break;
             case 3: // Player ready. Starting game.
-                if (stateChanged)
-                { // should only last one frame. Could foreseeably get stuck here.
+                // if (stateChanged)
+                // { // should only last one frame. Could foreseeably get stuck here.
                     playButton.Hide();
                     SpawnAirplane();
-                    gameState = 4;
-                }
+                Debug.Log("Spawned Airplane");
+                gameState = 4;
+                // }
                 break;
             case 4: // Flight in progress.
                 if (_paused) gameState = 5;
@@ -116,15 +121,15 @@ public class AirfieldManager : MonoBehaviour
             if (_paused) Time.timeScale = 0f;
             else Time.timeScale = 1f;
         }
-        Debug.Log("WOM: AIRFIELDMANAGER: Update Completed!");
+        // Debug.Log("WOM: AIRFIELDMANAGER: Update Completed!");
     }
 
-    bool PlaceAirfield()
+    void PlaceAirfield()
     {
         // If not touching screen
-        if (Input.touchCount == 0) return false;
+        if (Input.touchCount == 0) return;
         Touch touch = Input.GetTouch(0);
-        if (touch.phase != TouchPhase.Began) return false;
+        if (touch.phase != TouchPhase.Began) return;
         
         if (_raycastManager.Raycast(touch.position, rayHits, TrackableType.PlaneWithinPolygon))
         {
@@ -140,6 +145,8 @@ public class AirfieldManager : MonoBehaviour
             // with the anchor, since an anchor attached to an ARPlane will be updated automatically by the ARAnchorManager as the ARPlane's exact position is refined.
             var anchor = _anchorManager.AttachAnchor(hitPlane, hitPose);
             Instantiate(AirfieldPrefab, anchor.transform);
+            gameState = 2;
+            stateChanged = true;
 
             if (anchor == null)
             {
@@ -152,7 +159,6 @@ public class AirfieldManager : MonoBehaviour
             }
 
         }
-        return true;
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -160,12 +166,13 @@ public class AirfieldManager : MonoBehaviour
     {
         if (_airplaneController.IsDestroyed()) Destroy(airplane);
         airplane = Instantiate(AirplanePrefab, airplaneSpawner.transform);
+        System.Diagnostics.Debug.Assert(airplane != null, nameof(airplane) + " != null");
         airplane.name = "PlayerPlane";
         _airplaneController = airplane.GetComponent<AirplaneController>();
         HudControls.getNewAirplane();
     }
 
-    public void isPlayerReady() { gameState = 3; }
+    // public void isPlayerReady() { gameState = 3; }
     public bool AirfieldIsPlaced() { return _airfieldExists; }
 
     void debugGameState()
@@ -174,5 +181,10 @@ public class AirfieldManager : MonoBehaviour
                          $"gameState: {gameState}\n" +
                          $"Timescale: {Time.timeScale}\n" +
                          $"Paused: {_paused}";
+    }
+
+    public void setGameState(int state)
+    {
+        gameState = state;
     }
 }
