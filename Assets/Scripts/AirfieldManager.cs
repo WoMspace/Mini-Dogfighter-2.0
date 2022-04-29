@@ -24,7 +24,7 @@ public class AirfieldManager : MonoBehaviour
     // The "Play" Button
     public GameObject HUD_Prefab;
     private GameObject HUD;
-    private HudControls playButton;
+    private HudControls HUD_Script;
     
     // Game state stuff
     private int gameState; // See Update() for meanings.
@@ -86,17 +86,22 @@ public class AirfieldManager : MonoBehaviour
             case 2: // Waiting for player to be ready
                 if (stateChanged)
                 {
-                    if(HUD == null) HUD = Instantiate(HUD_Prefab);
-                    playButton = GameObject.Find("PlayButton").GetComponent<HudControls>();
-                    playButton.Show();
+                    if(!HUD) HUD = Instantiate(HUD_Prefab);
+                    // playButton = GameObject.Find("PlayButton").GetComponent<HudControls>();
+                    HUD_Script = HUD.GetComponent<HudControls>();
+                    // Debug.Log(HUD_Script);
+                    // if() Debug.Log("playbutton is Null");
+
                     Debug.Log("Got HudControls");
                 }
-                if (playButton.isPlayerReady()) gameState = 3;
+                if (HUD_Script.isPlayerReady()) gameState = 3;
                 break;
             case 3: // Player ready. Starting game.
                 // if (stateChanged)
                 // { // should only last one frame. Could foreseeably get stuck here.
-                    playButton.Hide();
+                    // playButton.Hide();
+                    HUD_Script.Hide("PlayButton");
+                Debug.Log("Hid play button.\nGoing to spawn airplane...");
                     SpawnAirplane();
                 Debug.Log("Spawned Airplane");
                 gameState = 4;

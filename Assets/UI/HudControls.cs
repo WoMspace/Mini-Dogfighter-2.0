@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using UnityEngine;
 
 [SuppressMessage("ReSharper", "CheckNamespace")]
@@ -8,15 +11,25 @@ public class HudControls : MonoBehaviour
 	private AirfieldManager airfieldManager;
 	private static AirplaneController airplaneController;
 	private static WeaponController weaponController;
-	private GameObject uiElement;
+	private Dictionary<string, GameObject> uiElements;
+	public List<GameObject> controls;
 
 	private bool _isPlayerReady;
     // Start is called before the first frame update
     void Awake()
     {
-	    uiElement = GetComponent<GameObject>();
+	    // uiElements = GetComponents<GameObject>();
+	    Debug.Log($"DEBUG: uiELEMENTS: {uiElements}");
 	    _isPlayerReady = false;
-	    Hide();
+    }
+
+    private void Start()
+    {
+	    // uiElements = GetComponents<GameObject>().ToList()
+	    foreach (var VARIABLE in GetComponents<GameObject>())
+	    {
+		    uiElements.Add(VARIABLE.name, VARIABLE);
+	    }
     }
 
     // Update is called once per frame
@@ -36,16 +49,18 @@ public class HudControls : MonoBehaviour
         weaponController.Shoot();
     }
 
-    private void Begin()
+    public void Begin()
     {
+	    Debug.Log("Start Button Pressed");
 	    _isPlayerReady = true;
 	    GameObject.Find("SpawnManager").GetComponent<AirfieldManager>().setGameState(3);
+	    
     }
     public bool isPlayerReady() {return _isPlayerReady;}
 
-    public void Show() { uiElement.SetActive(true); }
-    public bool isShown() {return uiElement.activeSelf;}
-    public void Hide() { uiElement.SetActive(false); }
+    public void Show(string element) { uiElements[element].SetActive(true); }
+    public bool isShown(string element) {return uiElements[element].activeSelf;}
+    public void Hide(string element) { uiElements[element].SetActive(false); }
 
     public static void getNewAirplane()
     {
