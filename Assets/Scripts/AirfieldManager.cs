@@ -86,6 +86,7 @@ public class AirfieldManager : MonoBehaviour
             case 2: // Waiting for player to be ready
                 if (stateChanged)
                 {
+                    Debug.Log($"State changed from {oldState} to {gameState}");
                     if(!HUD) HUD = Instantiate(HUD_Prefab);
                     // playButton = GameObject.Find("PlayButton").GetComponent<HudControls>();
                     HUD_Script = HUD.GetComponent<HudControls>();
@@ -93,8 +94,17 @@ public class AirfieldManager : MonoBehaviour
                     // if() Debug.Log("playbutton is Null");
 
                     Debug.Log("Got HudControls");
+                    break;
                 }
-                if (HUD_Script.isPlayerReady()) gameState = 3;
+                if (HUD_Script.isPlayerReady())
+                {
+                    Debug.Log("Player is ready. Switching to gamestate 3.");
+                    gameState = 3;
+                }
+                else
+                {
+                    Debug.Log("Player Not Ready.");
+                }
                 break;
             case 3: // Player ready. Starting game.
                 // if (stateChanged)
@@ -102,7 +112,8 @@ public class AirfieldManager : MonoBehaviour
                     // playButton.Hide();
                     HUD_Script.Hide("PlayButton");
                 Debug.Log("Hid play button.\nGoing to spawn airplane...");
-                    SpawnAirplane();
+                SpawnAirplane();
+                
                 Debug.Log("Spawned Airplane");
                 gameState = 4;
                 // }
@@ -169,12 +180,14 @@ public class AirfieldManager : MonoBehaviour
     // ReSharper disable Unity.PerformanceAnalysis
     void SpawnAirplane()
     {
-        if (_airplaneController.IsDestroyed()) Destroy(airplane);
+        if (_airplaneController.IsDestroyed()) { Destroy(airplane); }
         airplane = Instantiate(AirplanePrefab, airplaneSpawner.transform);
+        Debug.Log("Spawned Airplane");
         System.Diagnostics.Debug.Assert(airplane != null, nameof(airplane) + " != null");
         airplane.name = "PlayerPlane";
         _airplaneController = airplane.GetComponent<AirplaneController>();
         HudControls.getNewAirplane();
+        Debug.Log($"New Airplane name: {airplane.name}");
     }
 
     // public void isPlayerReady() { gameState = 3; }
