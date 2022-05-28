@@ -53,17 +53,18 @@ public class HudControls : MonoBehaviour
     {
 	    Debug.Log("Start Button Pressed");
 	    _isPlayerReady = true;
-	    // GameObject.Find("SpawnManager").GetComponent<AirfieldManager>().setGameState(3);
+	    GameObject.Find("SpawnManager").GetComponent<AirfieldManager>().setGameState(3);
     }
     public bool isPlayerReady() {return _isPlayerReady;}
 
     public void Show(string element) { uiElements[element].SetActive(true); }
     public bool isShown(string element) {return uiElements[element].activeSelf;}
 
-    public void Hide(string element)
+    public void Hide(GameObject element)
     {
-	    uiElements[element].SetActive(false);
-	    Debug.Log($"Hid element: {element}");
+	    element.SetActive(false);
+	    // uiElements[element].SetActive(false);
+	    Debug.Log($"Hid element: {element.name}");
     }
 
     public static void getNewAirplane()
