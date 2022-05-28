@@ -49,68 +49,81 @@ public class AirfieldManager : MonoBehaviour
     public GameObject AirplanePrefab;
     [CanBeNull] private GameObject airplane;
     [CanBeNull] private AirplaneController _airplaneController;
+    
+    // Debug
+    private const bool verbose = true;
+    private bool warnedAboutCase3 = false;
+    private bool updateRunning = false;
+
+    void EnforceConsecutive(bool stillRunning)
+    {
+        if (stillRunning)
+        {
+            Debug.LogError("WOM: AIRFIELDMANAGER: UPDATE: Never finished but is running again!");
+        }
+    }
 
     void Awake()
     {
-        Debug.Log("WOM: AIRFIELDMANAGER: Awake!");
         _planeManager = GetComponent<ARPlaneManager>();
         _raycastManager = GetComponent<ARRaycastManager>();
         _anchorManager = GetComponent<ARAnchorManager>();
-        Debug.Log("WOM: Finished getting AR components.");
 
         airplaneSpawner = GameObject.Find("AirplaneSpawner");
         // _airplaneController = airplane.GetComponent<AirplaneController>();
         debugGameState();
         Time.timeScale = 1f;
-        Debug.Log("WOM: AIRFIELDMANAGER: Awake Completed!");
     }
     void Start()
     {
-        Debug.Log("WOM: AIRFIELDMANAGER: Start!");
         gameState = 1;
         debugGameState();
-        Debug.Log("WOM: AIRFIELDMANAGER: Start Completed!");
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Debug.Log("WOM: AIRFIELDMANAGER: Update!");
+        Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: BEGIN");
+        EnforceConsecutive(updateRunning);
+        updateRunning = true;
         debugGameState();
         int oldState = gameState;
         switch (gameState)
         {
             case 0: //Not started, only tracking.
+                if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 0");
                 break;
             case 1: // Ready to place airfield.
                 // if (PlaceAirfield()) gameState = 2;
+                if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 1");
                 PlaceAirfield();
                 break;
             case 2: // Waiting for player to be ready
+                if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 2");
                 if (stateChanged)
                 {
-                    Debug.Log($"WOM: State changed from {oldState} to {gameState}");
+                    if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: CASE 2: State changed; First Run");
                     if(!HUD) HUD = Instantiate(HUD_Prefab);
                     if (!StartButton) StartButton = GameObject.FindWithTag("PlayButton");
                     // playButton = GameObject.Find("PlayButton").GetComponent<HudControls>();
                     HUD_Script = HUD.GetComponent<HudControls>();
                     Debug.Log(HUD_Script);
-                    // if() Debug.Log("playbutton is Null");
 
-                    Debug.Log("WOM: Got HudControls");
+                    if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: CASE 2: Got HudControls");
                     break;
                 }
                 if (HUD_Script.isPlayerReady())
                 {
-                    Debug.Log("WOM: Player is ready. Switching to gamestate 3.");
+                    if (verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: CASE 2: Player is ready. Switching to gamestate 3.");
                     gameState = 3;
                 }
                 else
                 {
-                    Debug.Log("Player Not Ready.");
+                    if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: CASE 2: Player is not ready. Exiting Switch.");
                 }
                 break;
             case 3: // Player ready. Starting game.
+                if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 3");
                 if (stateChanged)
                 { // should only last one frame. Could foreseeably get stuck here.
                     // HUD_Script.Hide("PlayButton");
@@ -124,36 +137,62 @@ public class AirfieldManager : MonoBehaviour
                 }
                 if (!stateChanged)
                 { // This should never happen <_<
-                    Debug.LogError("WOM: Update Ran case:3 more than once.");
-                    Debug.LogError($"WOM: Airplane : {airplane}");
-                    Debug.LogError($"WOM: HUD : {HUD}");
-                    Debug.LogError($"WOM: Airfield : {Airfield}");
-                    Debug.LogError($"WOM: StartButton : {StartButton}");
-                    Environment.Exit(0);
+                    if(!warnedAboutCase3)
+                    {
+                        Debug.LogError("WOM: Update Ran case:3 more than once.");
+                        Debug.LogError($"WOM: Airplane : {airplane}");
+                        Debug.LogError($"WOM: HUD : {HUD}");
+                        Debug.LogError($"WOM: Airfield : {Airfield}");
+                        Debug.LogError($"WOM: StartButton : {StartButton}");
+                        // Environment.Exit(0);
+                        gameState = 4;
+                        warnedAboutCase3 = true;
+                        Debug.LogError("Overrode gamestate to 4.");
+                    }
+                    else
+                    {
+                        Debug.LogError("WOM: Update Ran case:3 more than twice after explicitly setting gameState to 4.");
+                        Debug.LogError("Gamestate: " + gameState);
+                        Environment.FailFast("Forcefully exiting.");
+                    }
                 }
                 break;
             case 4: // Flight in progress.
+                if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 4");
                 if (_paused) gameState = 5;
                 break;
             case 5: // Game in progress, paused.
+                if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 5");
                 if (!_paused) {gameState = 4; return;}
                 break;
             case 6: // Aircraft destroyed.
+                if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 6");
                 break;
             case 7: // Game ended. Show Menu.
+                if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 7");
                 break;
+            default: // This shouldn't be possible.
+                Debug.LogError($"WOM: UPDATE: Game State reached impossible value: {gameState}");
+                Debug.LogError($"WOM: UPDATE: Ligma Balls.");
+                throw new Exception("WOM: UPDATE: Game State reached impossible value.");
         }
-
+        if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Switch Finished.");
         stateChanged = oldState != gameState;
         if (stateChanged)
         {
             // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
             if (_paused) Time.timeScale = 0f;
             else Time.timeScale = 1f;
+            Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: State changed from " + oldState + " => " + gameState);
+        }
+        else
+        {
+            Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: State did not change: " + gameState);
         }
 
         debugNumber++;
-        Debug.Log("WOM: AIRFIELDMANAGER: Update Completed!");
+        updateRunning = false;
+        Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: END");
     }
 
     void PlaceAirfield()
