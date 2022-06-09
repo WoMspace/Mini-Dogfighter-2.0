@@ -53,6 +53,7 @@ public class AirfieldManager : MonoBehaviour
     // Debug
     private const bool verbose = true;
     private bool warnedAboutCase3 = false;
+    private int case3Runs = 0;
     private bool updateRunning = false;
 
     void EnforceConsecutive(bool stillRunning)
@@ -124,8 +125,8 @@ public class AirfieldManager : MonoBehaviour
                 break;
             case 3: // Player ready. Starting game.
                 if(verbose) Debug.Log("WOM: AIRFIELDMANAGER: UPDATE: Case 3");
-                if (stateChanged)
-                { // should only last one frame. Could foreseeably get stuck here.
+                // if (stateChanged)
+                // { // should only last one frame. Could foreseeably get stuck here.
                     // HUD_Script.Hide("PlayButton");
                     HUD_Script.Hide(StartButton);
                     Debug.Log("WOM: Hid play button.\nGoing to spawn airplane...");
@@ -134,10 +135,10 @@ public class AirfieldManager : MonoBehaviour
                     Debug.Log("WOM: Spawned Airplane");
                     gameState = 4;
                     Debug.Log("WOM: Changed to gamestate 4");
-                }
-                if (!stateChanged)
+                // }
+                if (case3Runs > 1)
                 { // This should never happen <_<
-                    if(!warnedAboutCase3)
+                    if(case3Runs > 2 || warnedAboutCase3)
                     {
                         Debug.LogError("WOM: Update Ran case:3 more than once.");
                         Debug.LogError($"WOM: Airplane : {airplane}");
@@ -235,6 +236,7 @@ public class AirfieldManager : MonoBehaviour
     // ReSharper disable Unity.PerformanceAnalysis
     void SpawnAirplane()
     {
+        Debug.Log("WOM: AIRFIELDMANAGER: SpawnAirplane: Beginning");
         if (_airplaneController.IsDestroyed()) { Destroy(airplane); }
         airplane = Instantiate(AirplanePrefab, airplaneSpawner.transform);
         Debug.Log("Spawned Airplane");
@@ -242,7 +244,7 @@ public class AirfieldManager : MonoBehaviour
         airplane.name = "PlayerPlane";
         _airplaneController = airplane.GetComponent<AirplaneController>();
         HudControls.getNewAirplane();
-        Debug.Log($"New Airplane name: {airplane.name}");
+        Debug.Log($"WOM: AIRFIELDMANAGER: SpawnAirplane: Complete. New Airplane name: {airplane.name}");
     }
 
     // public void isPlayerReady() { gameState = 3; }
