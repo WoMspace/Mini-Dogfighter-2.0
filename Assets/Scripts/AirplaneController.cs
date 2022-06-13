@@ -29,17 +29,19 @@ public class AirplaneController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!AirfieldManager.Paused())
-        {
+        Debug.Log("WOM:AIRPLANECONTROLLER:UPDATE: BEGIN");
+        // if (!AirfieldManager.Paused())
+        // {
             if (UseLookControls) LookControls();
             else RemoteControls();
-        }
+        // }
 
         _isDestroyed = hp <= 0;
     }
     // TODO: Add speed controller for propeller
     void LookControls()
     {
+        
         Vector3 cameraTarget = new Vector3(phoneCamera.pixelWidth / 2f, phoneCamera.pixelHeight / 2f, distanceToCamera);
         Vector3 targetLocation = phoneCamera.ScreenToWorldPoint(cameraTarget);
         Vector3 airplanePosition = airplane.transform.position;

@@ -6,6 +6,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using Object = UnityEngine.Object;
+
 // ReSharper disable StringLiteralTypo
 
 [RequireComponent(typeof(ARRaycastManager))]
@@ -143,15 +145,19 @@ public class AirfieldManager : MonoBehaviour
                 // if (stateChanged)
                 // { // should only last one frame. Could foreseeably get stuck here.
                     // HUD_Script.Hide("PlayButton");
-                    Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: Hiding StartButton : {StartButton}");
-                    HUD_Script.Hide(StartButton);
-                    Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Hid StartButton.\nGoing to spawn airplane...");
+                Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: Hiding StartButton : {StartButton}");
+                HUD_Script.Hide(StartButton);
+                Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Hid StartButton.\nGoing to spawn airplane...");
+                // try
+                // {
                     GameObject tmp = SpawnAirplane();
                     Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: Spawned airplane : {tmp}");
-                
-                    Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Spawned Airplane");
-                    gameState = 4;
-                    Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Changed to gamestate 4");
+                // }
+                // catch(Exception e){Debug.LogError($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: {e}");}
+            
+                Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Spawned Airplane");
+                gameState = 4;
+                Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Changed to gamestate 4");
                 // }
                 if (case3Runs > 1)
                 { // This should never happen <_<
@@ -234,6 +240,7 @@ public class AirfieldManager : MonoBehaviour
             // with the anchor, since an anchor attached to an ARPlane will be updated automatically by the ARAnchorManager as the ARPlane's exact position is refined.
             var anchor = _anchorManager.AttachAnchor(hitPlane, hitPose);
             Airfield = Instantiate(AirfieldPrefab, anchor.transform);
+            airplaneSpawner = GameObject.FindWithTag("Respawn");
 
             if (anchor == null)
             {
@@ -252,10 +259,31 @@ public class AirfieldManager : MonoBehaviour
     GameObject SpawnAirplane()
     {
         Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Beginning");
-        Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: _airplaneController : {_airplaneController}");
-        if(_airplaneController == null) {}
-        else if (_airplaneController.IsDestroyed()) { Destroy(airplane); }
-        airplane = Instantiate(AirplanePrefab, airplaneSpawner.transform);
+        // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: AirplanePrefab : {AirplanePrefab}");
+        debugRuntimeObject(AirplanePrefab, "AirplanePrefab", true, true, "WOM:AIRFIELDMANAGER:SpawnAirPlane:");
+        // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: _airplaneController : {_airplaneController}");
+        debugRuntimeObject(_airplaneController, "_airplaneController", false, false, "WOM:AIRFIELDMANAGER:SpawnAirPlane:");
+        // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: airplaneSpawner : {airplaneSpawner}");
+        debugRuntimeObject(airplaneSpawner, "airplaneSpawner", true, true, "WOM:AIRFIELDMANAGER:SpawnAirPlane:");
+        // if (_airplaneController != null)
+        // {
+        //     if (_airplaneController.IsDestroyed()) { Destroy(airplane); }
+        // }
+        // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane AirplanePrefab : " + AirplanePrefab == null ? "null" : AirplanePrefab.ToString());
+        // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane airplaneSpawner : " + airplaneSpawner == null ? "null" : airplaneSpawner.ToString());
+        
+        Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Going for airplane instantiate!");
+        try
+        {
+            airplane = Instantiate(AirplanePrefab, airplaneSpawner.transform);
+            Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: Successfully spawned airplane!");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"WOM:AIRFIELDMANAGER:SpawnAirplane: {e}");
+            Environment.FailFast($"WOM:AIRFIELDMANAGER:SpawnAirplane: Couldn't instantiate {AirplanePrefab} at location of {airplaneSpawner}");
+        }
+        
         Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Spawned Airplane");
         System.Diagnostics.Debug.Assert(airplane != null, nameof(airplane) + " != null"); // This is for Rider linting
         airplane.name = "PlayerPlane";
@@ -274,6 +302,18 @@ public class AirfieldManager : MonoBehaviour
                          $"gameState: {gameState}\n" +
                          $"Timescale: {Time.timeScale}\n" +
                          $"Paused: {_paused}";
+    }
+
+    void debugRuntimeObject([CanBeNull] Object item, string name, bool errorOnNull = false, bool exceptionOnNull = false, string context = "WOM:AIRFIELDMANAGER:")
+    {
+        bool isNull = item == null;
+        var message = isNull ? $"{name} is null!" : $"{name} : {item}";
+
+        string log = $"{context} {message}";
+        
+        if(isNull && errorOnNull) Debug.LogError(log);
+        if (isNull && exceptionOnNull) throw new NullReferenceException($"{name} is null!");
+        if(!isNull) Debug.Log(log);
     }
 
     public void setGameState(int state)
