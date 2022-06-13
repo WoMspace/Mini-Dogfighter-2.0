@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Floor
   - PlayButton
+  - ARCamera
   layers:
   - Default
   - TransparentFX

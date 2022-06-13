@@ -360,7 +360,7 @@ GameObject:
   - component: {fileID: 1354141927}
   m_Layer: 0
   m_Name: AR Camera
-  m_TagString: Untagged
+  m_TagString: ARCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -590,7 +590,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1435971377
 RectTransform:
   m_ObjectHideFlags: 0
@@ -806,11 +806,13 @@ MonoBehaviour:
   ARCamera: {fileID: 1354141925}
   HUD_Prefab: {fileID: 3206149789197053111, guid: 2b5845b559fab44a19dccbfce3b02b3d,
     type: 3}
+  StartButton: {fileID: 0}
   debugText: {fileID: 1435971378}
   AirfieldPrefab: {fileID: 6889184667246986211, guid: 8f8fe96c2f0814d76ab10cebb81c4685,
     type: 3}
   AirplanePrefab: {fileID: 6822971464690754840, guid: 926a9c902b54044699f97ebfcc3768d4,
     type: 3}
+  verbose: 0
 --- !u!114 &2030846594
 MonoBehaviour:
   m_ObjectHideFlags: 0

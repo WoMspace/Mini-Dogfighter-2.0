@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -55,7 +54,7 @@ public class AirfieldManager : MonoBehaviour
     [CanBeNull] private AirplaneController _airplaneController;
     
     // Debug
-    private const bool verbose = true;
+    public bool verbose;
     private bool warnedAboutCase3 = false;
     private int case3Runs = 0;
     private bool updateRunning = false;
@@ -77,6 +76,8 @@ public class AirfieldManager : MonoBehaviour
         airplaneSpawner = GameObject.Find("AirplaneSpawner");
         // _airplaneController = airplane.GetComponent<AirplaneController>();
         debugGameState();
+        
+        verbose = Debug.isDebugBuild;
         Time.timeScale = 1f;
     }
     void Start()
@@ -88,10 +89,13 @@ public class AirfieldManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("WOM:AIRFIELDMANAGER:UPDATE: BEGIN");
-        EnforceConsecutive(updateRunning);
+        if (verbose)
+        {
+            Debug.Log("WOM:AIRFIELDMANAGER:UPDATE: BEGIN");
+            EnforceConsecutive(updateRunning);
+            debugGameState();
+        }
         updateRunning = true;
-        debugGameState();
         stateChanged = oldGameState != gameState;
         oldGameState = gameState;
         switch (gameState)
@@ -119,7 +123,7 @@ public class AirfieldManager : MonoBehaviour
                     HUD_Script = GameObject.FindWithTag("PlayButton").GetComponent<HudControls>();
                     if(verbose) Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE2: HUD_Script : {HUD_Script}");
                     StartButton = GameObject.FindWithTag("PlayButton");
-                    Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE2: Got StartButton : {StartButton}");
+                    if(verbose) Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE2: Got StartButton : {StartButton}");
                     
                     if (HUD_Script == null)
                     {
@@ -145,19 +149,19 @@ public class AirfieldManager : MonoBehaviour
                 // if (stateChanged)
                 // { // should only last one frame. Could foreseeably get stuck here.
                     // HUD_Script.Hide("PlayButton");
-                Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: Hiding StartButton : {StartButton}");
+                if(verbose) Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: Hiding StartButton : {StartButton}");
                 HUD_Script.Hide(StartButton);
-                Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Hid StartButton.\nGoing to spawn airplane...");
+                if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Hid StartButton.\nGoing to spawn airplane...");
                 // try
                 // {
                     GameObject tmp = SpawnAirplane();
-                    Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: Spawned airplane : {tmp}");
+                    if(verbose) Debug.Log($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: Spawned airplane : {tmp}");
                 // }
                 // catch(Exception e){Debug.LogError($"WOM:AIRFIELDMANAGER:UPDATE:CASE3: {e}");}
             
-                Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Spawned Airplane");
+                if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Spawned Airplane");
                 gameState = 4;
-                Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Changed to gamestate 4");
+                if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:UPDATE:CASE3: Changed to gamestate 4");
                 // }
                 if (case3Runs > 1)
                 { // This should never happen <_<
@@ -207,16 +211,16 @@ public class AirfieldManager : MonoBehaviour
             // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
             if (_paused) Time.timeScale = 0f;
             else Time.timeScale = 1f;
-            Debug.Log("WOM:AIRFIELDMANAGER:UPDATE: State changed from " + oldGameState + " => " + gameState);
+            if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:UPDATE: State changed from " + oldGameState + " => " + gameState);
         }
         else
         {
-            Debug.Log("WOM:AIRFIELDMANAGER:UPDATE: State did not change: " + gameState);
+            if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:UPDATE: State did not change: " + gameState);
         }
 
         debugNumber++;
         updateRunning = false;
-        Debug.Log("WOM:AIRFIELDMANAGER:UPDATE: END");
+        if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:UPDATE: END");
     }
 
     void PlaceAirfield()
@@ -244,7 +248,7 @@ public class AirfieldManager : MonoBehaviour
 
             if (anchor == null)
             {
-                Debug.Log("WOM:AIRFIELDMANAGER:PlaceAirfield: Error creating anchor.");
+                if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:PlaceAirfield: Error creating anchor.");
             }
             else
             {
@@ -258,7 +262,7 @@ public class AirfieldManager : MonoBehaviour
     // ReSharper disable Unity.PerformanceAnalysis
     GameObject SpawnAirplane()
     {
-        Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Beginning");
+        if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Beginning");
         // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: AirplanePrefab : {AirplanePrefab}");
         debugRuntimeObject(AirplanePrefab, "AirplanePrefab", true, true, "WOM:AIRFIELDMANAGER:SpawnAirPlane:");
         // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: _airplaneController : {_airplaneController}");
@@ -272,11 +276,11 @@ public class AirfieldManager : MonoBehaviour
         // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane AirplanePrefab : " + AirplanePrefab == null ? "null" : AirplanePrefab.ToString());
         // Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane airplaneSpawner : " + airplaneSpawner == null ? "null" : airplaneSpawner.ToString());
         
-        Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Going for airplane instantiate!");
+        if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Going for airplane instantiate!");
         try
         {
             airplane = Instantiate(AirplanePrefab, airplaneSpawner.transform);
-            Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: Successfully spawned airplane!");
+            if(verbose) Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: Successfully spawned airplane!");
         }
         catch (Exception e)
         {
@@ -284,12 +288,14 @@ public class AirfieldManager : MonoBehaviour
             Environment.FailFast($"WOM:AIRFIELDMANAGER:SpawnAirplane: Couldn't instantiate {AirplanePrefab} at location of {airplaneSpawner}");
         }
         
-        Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Spawned Airplane");
+        if(verbose) Debug.Log("WOM:AIRFIELDMANAGER:SpawnAirplane: Spawned Airplane");
         System.Diagnostics.Debug.Assert(airplane != null, nameof(airplane) + " != null"); // This is for Rider linting
         airplane.name = "PlayerPlane";
+        airplane.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         _airplaneController = airplane.GetComponent<AirplaneController>();
+        _airplaneController.GetComponents(airplane);
         HudControls.getNewAirplane();
-        Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: Complete. New Airplane name: {airplane.name}");
+        if(verbose) Debug.Log($"WOM:AIRFIELDMANAGER:SpawnAirplane: Complete. New Airplane name: {airplane.name}");
         return airplane;
     }
 
@@ -310,10 +316,13 @@ public class AirfieldManager : MonoBehaviour
         var message = isNull ? $"{name} is null!" : $"{name} : {item}";
 
         string log = $"{context} {message}";
-        
-        if(isNull && errorOnNull) Debug.LogError(log);
-        if (isNull && exceptionOnNull) throw new NullReferenceException($"{name} is null!");
-        if(!isNull) Debug.Log(log);
+
+        if (verbose)
+        {
+            if (isNull && errorOnNull) Debug.LogError(log);
+            if (isNull && exceptionOnNull) throw new NullReferenceException($"{name} is null!");
+            if (!isNull) Debug.Log(log);
+        }
     }
 
     public void setGameState(int state)
